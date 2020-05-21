@@ -1,5 +1,5 @@
 import cx_Oracle
-conn=cx_Oracle.connect("bancs/wert45@query570")
+conn=cx_Oracle.connect("bancs/kkkk@query570")
 curs_table=conn.cursor() 
 curs_col=conn.cursor()
 curs_table.execute("select table_name, table_type   from sys.all_catalog where owner = 'BANCS'  and \
