@@ -1,20 +1,20 @@
-#win32³ÌĞòÀ©Õ¹Ä£¿é
+#win32ç¨‹åºæ‰©å±•æ¨¡å—
 import win32serviceutil,win32service,win32event,servicemanager,win32com.client
 import win32con,win32file,pywintypes
 import cx_Oracle
-#ÈÕÆÚÏà¹ØÄ£¿é
+#æ—¥æœŸç›¸å…³æ¨¡å—
 from datetime import date,timedelta
 import os
 import thread,time
 import ftplib,types
 import tarfile
 import gzip
-#½âÎö²ÎÊıÄ£¿é
+#è§£æå‚æ•°æ¨¡å—
 import ConfigParser,string
 import zipfile
 import tempfile
 from socket import *
-#webserviceÄ£¿é
+#webserviceæ¨¡å—
 from ZSI.client import NamedParamBinding as NPBinding
 from ZSI.client import AUTH
 import sys
@@ -22,13 +22,13 @@ import sys
 sys.path.append(r'D:\Projects\boc\pgm\etlnew')
 from SasConfig import SasConfig,Sms
 
-#¶¨ÒåÒì³£
+#å®šä¹‰å¼‚å¸¸
 class MyException(Exception):
     def __init__(self,msg):
         self.args=msg
      
 class RunPython:
-    #ÅĞ¶ÏGLDM±íÊÇ·ñµ¹ÈëÍê³É
+    #åˆ¤æ–­GLDMè¡¨æ˜¯å¦å€’å…¥å®Œæˆ
     def checkGLDM(self,procDate):
         try:
             str_date=string.replace(procDate.isoformat(),'-','')
@@ -44,11 +44,11 @@ class RunPython:
                 time.sleep(30)
             conn.close()
         except Exception,msg:
-            return False,'ÔËĞĞloadGLDM´íÎó£¬´íÎóĞÅÏ¢£º%s'%str(msg)
+            return False,'è¿è¡ŒloadGLDMé”™è¯¯ï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s'%str(msg)
         else:
-            return True,'GLDMµ¹ÈëÍê³É'
-            #ÅĞ¶ÏGLDM±íÊÇ·ñµ¹ÈëÍê³É
-    #sgjj_hd:ÅĞ¶ÏITASºÍINVM±íÊÇ·ñµ¹ÈëÍê³É    
+            return True,'GLDMå€’å…¥å®Œæˆ'
+            #åˆ¤æ–­GLDMè¡¨æ˜¯å¦å€’å…¥å®Œæˆ
+    #sgjj_hd:åˆ¤æ–­ITASå’ŒINVMè¡¨æ˜¯å¦å€’å…¥å®Œæˆ    
     def check_HD(self,procDate):
         try:
             str_date=string.replace(procDate.isoformat(),'-','')
@@ -64,11 +64,11 @@ class RunPython:
                 time.sleep(30)
             conn.close()
         except Exception,msg:
-            return False,'ÔËĞĞloadITAS_TXN_TIF_BAS´íÎó£¬´íÎóĞÅÏ¢£º%s'%str(msg)
+            return False,'è¿è¡ŒloadITAS_TXN_TIF_BASé”™è¯¯ï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s'%str(msg)
         else:
-            return True,'ITAS_TXN_TIF_BASµ¹ÈëÍê³É'
+            return True,'ITAS_TXN_TIF_BASå€’å…¥å®Œæˆ'
 
-    #²úÉú¹«Îñ¿¨µÄÊı¾İ
+    #äº§ç”Ÿå…¬åŠ¡å¡çš„æ•°æ®
     def procCorpTran_v3(self,procDate):
         try:
             str_date=string.replace(procDate.isoformat(),'-','')
@@ -90,8 +90,8 @@ class RunPython:
             extr_file.close()
 
             ftp_crm = ftplib.FTP()
-            ftp_crm.connect("21.96.5.54",21)
-            ftp_crm.login("cardftp","QWER5678b")
+            ftp_crm.connect("xx.xx.xx.xx",21)
+            ftp_crm.login("cardftp","111111")
             ftp_crm.set_pasv(False)
             ftp_crm.cwd("gwk")
             #ftp_crm.cwd("gwk")
@@ -114,21 +114,21 @@ class RunPython:
             extr_file.close()
             
             ftp_crm = ftplib.FTP()
-            ftp_crm.connect("21.96.5.54",21)
-            ftp_crm.login("cardftp","QWER5678b")
+            ftp_crm.connect("xx.xx.xx.xx",21)
+            ftp_crm.login("cardftp","111111")
             ftp_crm.set_pasv(False)
             ftp_crm.cwd("gwk")
             extr_file=open("d:\\temp\\corp\\%s"%corp_name,'rb')
             ftp_crm.storbinary ("STOR %s"%corp_name,extr_file)
             extr_file.close()
             ftp_crm.close()
-            return True,'¹«Îñ¿¨Êı¾İ²úÉú³É¹¦'
+            return True,'å…¬åŠ¡å¡æ•°æ®äº§ç”ŸæˆåŠŸ'
         except Exception,msg:
             errmsg=str(msg)
             if errmsg.find('descriptor') != -1 :
-                return None,'¹«Îñ¿¨Êı¾İ²úÉúÊ§°Ü£º'+str(msg)
+                return None,'å…¬åŠ¡å¡æ•°æ®äº§ç”Ÿå¤±è´¥ï¼š'+str(msg)
             else:
-                return False,'¹«Îñ¿¨Êı¾İ²úÉúÊ§°Ü£º'+str(msg)
+                return False,'å…¬åŠ¡å¡æ•°æ®äº§ç”Ÿå¤±è´¥ï¼š'+str(msg)
 
     def procCorpText(self,procDate):
         try:
@@ -177,8 +177,8 @@ class RunPython:
             
 
             ftp_crm = ftplib.FTP()
-            ftp_crm.connect("21.96.5.54",21)
-            ftp_crm.login("cardftp","QWER5678b")
+            ftp_crm.connect("xx.xx.xx.xx",21)
+            ftp_crm.login("cardftp","111111")
             ftp_crm.set_pasv(False)
             ftp_crm.cwd("bin")
             extr_file=open("d:\\temp\\corp\\cpy.txt",'rb')
@@ -197,10 +197,10 @@ class RunPython:
             ftp_crm.storbinary ("STOR cpyedit1.txt.%s"%procDate.isoformat(),extr_file)
             extr_file.close()
             ftp_crm.close()
-            return True,'¹«Îñ¿¨Êı¾İ²úÉú³É¹¦'
+            return True,'å…¬åŠ¡å¡æ•°æ®äº§ç”ŸæˆåŠŸ'
         except Exception,msg:
-            return False,'¹«Îñ¿¨Êı¾İ²úÉúÊ§°Ü£º'+str(msg)
-    #¼¯ÖĞ²É¹ºÏîÄ¿¶ÌĞÅÌáÊ¾
+            return False,'å…¬åŠ¡å¡æ•°æ®äº§ç”Ÿå¤±è´¥ï¼š'+str(msg)
+    #é›†ä¸­é‡‡è´­é¡¹ç›®çŸ­ä¿¡æç¤º
     def jzcgMessage(self,procDate):
         try:
             conn=cx_Oracle.connect(SasConfig.conn_newdss)
@@ -218,16 +218,16 @@ class RunPython:
 
             curs_table.execute(runsql)
             for row_table in curs_table.fetchall():
-                message="ÏîÄ¿±àºÅ£º%s£¬ÏîÄ¿Ãû³Æ£º%s£¬ºÏÍ¬±àºÅ£º%s ½«ÓÚ%sµ½ÆÚ£¬Çë¼°Ê±´¦Àí"%(row_table[0],row_table[1],row_table[2],row_table[3])
+                message="é¡¹ç›®ç¼–å·ï¼š%sï¼Œé¡¹ç›®åç§°ï¼š%sï¼ŒåˆåŒç¼–å·ï¼š%s å°†äº%såˆ°æœŸï¼Œè¯·åŠæ—¶å¤„ç†"%(row_table[0],row_table[1],row_table[2],row_table[3])
                 Sms().SendSms2Server(message,row_table[4])
                 Sms().SendSms2Server(message,row_table[5])
         except Exception,msg:
-             return False,'¼¯ÖĞ²É¹ºÏîÄ¿·¢¶ÌĞÅ´íÎó£¬´íÎóĞÅÏ¢£º%s'%str(msg)
+             return False,'é›†ä¸­é‡‡è´­é¡¹ç›®å‘çŸ­ä¿¡é”™è¯¯ï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s'%str(msg)
         else:
-            return True,'¼¯ÖĞ²É¹ºÏîÄ¿·¢¶ÌĞÅ³É¹¦'
+            return True,'é›†ä¸­é‡‡è´­é¡¹ç›®å‘çŸ­ä¿¡æˆåŠŸ'
     def procBackupSas(self,procDate):
         os.system(r'D:\Projects\boc\batch\backup.bat')
-        return True,'±¸·İ³É¹¦'
+        return True,'å¤‡ä»½æˆåŠŸ'
     def BackupScis(self,procDate):
         try:
             conn=cx_Oracle.connect(SasConfig.conn_dss)
@@ -237,7 +237,7 @@ class RunPython:
             #for row in cursLog.fetchall():
             #    table_name=row[0]
             #    if os.system(r'exp %s file=D:\Backup\dump\%s tables=%s '%(SasConfig.conn_dss,table_name,table_name)) != 0:
-            #         raise MyException('±¸·İ±í%s´íÎó'%table_name)
+            #         raise MyException('å¤‡ä»½è¡¨%sé”™è¯¯'%table_name)
             conn.close()
 
             conn=cx_Oracle.connect(SasConfig.conn_bancs)
@@ -249,7 +249,7 @@ class RunPython:
                 os.system(r'exp %s file=D:\Backup\dump\%s tables=%s '%(SasConfig.conn_bancs,table_name,table_name)) 
             conn.close()            
             os.system(r'exp %s owner=dss file=D:\Backup\dump\dss rows=n'%SasConfig.conn_dss)
-                #raise MyException('±¸·İÓÃ»§dss´íÎó')
+                #raise MyException('å¤‡ä»½ç”¨æˆ·dssé”™è¯¯')
             tar = tarfile.open(r"d:\backup\custombac.tar.gz", "w:gz")
             tar.add(r"D:\Backup\dump")
             tar.close()
@@ -265,27 +265,27 @@ class RunPython:
           
             ftp.close()
         except Exception,msg:
-             return False,'±¸·İÊı¾İÊ±´íÎó£¬´íÎóĞÅÏ¢£º%s'%str(msg)
+             return False,'å¤‡ä»½æ•°æ®æ—¶é”™è¯¯ï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s'%str(msg)
         else:
-            return True,'±¸·İÊı¾İ³É¹¦'
+            return True,'å¤‡ä»½æ•°æ®æˆåŠŸ'
 
 
     def procCzt(self,procDate):
-        #²ÆÕşÌüÊı¾İ
+        #è´¢æ”¿å…æ•°æ®
         os.system(r'D:\Projects\boc\java\czt\czt.bat %s'%string.replace(procDate.isoformat(),'-',''))
-        return True,'È¡ei±¨±íÊı¾İ³É¹¦'
+        return True,'å–eiæŠ¥è¡¨æ•°æ®æˆåŠŸ'
 
 
-    #ĞÅÓÃ¿¨Êı¾İ×°ÔØ-´ÓFTPÈ¡Êı
+    #ä¿¡ç”¨å¡æ•°æ®è£…è½½-ä»FTPå–æ•°
     def get_card_data_v3(self,procDate):
         try:
             long_date=procDate.isoformat()
-            #½«µ±ÈÕĞèÒª´¦ÀíµÄÎÄ¼şĞ´ÈëÊı¾İ¿â
+            #å°†å½“æ—¥éœ€è¦å¤„ç†çš„æ–‡ä»¶å†™å…¥æ•°æ®åº“
             conn=cx_Oracle.connect(SasConfig.conn_bancs)
             cursLog=conn.cursor()
             cursProc=conn.cursor()
             cursLog.callproc('proc_data.insert_card_log',(long_date,))
-            #Á¬½Óµ½FTP·şÎñÆ÷
+            #è¿æ¥åˆ°FTPæœåŠ¡å™¨
             ftp = ftplib.FTP()
             ftp.connect(SasConfig.card_ftp_ip,SasConfig.card_ftp_port)
             ftp.login(SasConfig.card_ftp_user,SasConfig.card_ftp_passwd)
@@ -319,25 +319,25 @@ class RunPython:
         except Exception,msg:
             errmsg=str(msg)
             if errmsg.find('descriptor') != -1 :
-                return None,'È¡ĞÅÓÃ¿¨ÎÄ±¾´íÎó'+str(msg)
+                return None,'å–ä¿¡ç”¨å¡æ–‡æœ¬é”™è¯¯'+str(msg)
             else:
-                return False,'È¡ĞÅÓÃ¿¨ÎÄ±¾´íÎó'+str(msg)
-        return True,'È¡ĞÅÓÃ¿¨ÎÄ±¾³É¹¦'
+                return False,'å–ä¿¡ç”¨å¡æ–‡æœ¬é”™è¯¯'+str(msg)
+        return True,'å–ä¿¡ç”¨å¡æ–‡æœ¬æˆåŠŸ'
     
-    #½«ĞÅÓÃ¿¨µÄÑ¹ËõÎÄ¼ş×ª»»³É¿ÉÒÔsqlldrµ½Êı¾İ¿âµÄÎÄ¼ş
+    #å°†ä¿¡ç”¨å¡çš„å‹ç¼©æ–‡ä»¶è½¬æ¢æˆå¯ä»¥sqlldråˆ°æ•°æ®åº“çš„æ–‡ä»¶
     def procCardFile(self,sourceFile,destinFile,ctrnam,sourceFileName,filetype): 
         #print r'd:\PACL\paext -o+ -p%s %s'%(SasConfig.card_sqlldr_data,sourceFile)
         returnCode=os.system(r'd:\PACL\paext -o+ -p%s %s'%(SasConfig.card_sqlldr_data,sourceFile))
         
         if returnCode!= 0 :
-            raise MyException('½âÑ¹%sÊ±³ö´í'%sourceFile)
+            raise MyException('è§£å‹%sæ—¶å‡ºé”™'%sourceFile)
         if filetype == '1':
             inFileName=r"%s%s.gz"%(SasConfig.card_sqlldr_data,sourceFileName[:-5])
         else:
             inFileName=r"%s%s.txt"%(SasConfig.card_sqlldr_data,sourceFileName[:-6])
         inFile=open(inFileName,'rb')
         outFile=open(destinFile,'wb')
-        line=inFile.readline() #ºöÂÔµÚÒ»ĞĞ
+        line=inFile.readline() #å¿½ç•¥ç¬¬ä¸€è¡Œ
         while 1:
             line=inFile.readline()
             if not line:
@@ -349,7 +349,7 @@ class RunPython:
         inFile.close()
         os.remove(inFileName)
 
-    #Êı¾İ×°ÈëÊı¾İ¿â
+    #æ•°æ®è£…å…¥æ•°æ®åº“
     def procCard2DB_v3(self,procDate):
         #reload(SasConfig)
         try:
@@ -368,8 +368,8 @@ class RunPython:
                 
                 if(os.system(r"sqlldr %s control=%s bindsize=10000000 rows=500 log=%s data=%s bad=%s"%\
                              (SasConfig.conn_dataprc,control_file,log_file,SasConfig.card_sqlldr_data+ctrnam+'.txt',bad_file)) != 0):
-                    raise MyException('ÓÃsqlldr×°ÈëÊı¾İ%sÊ±³ö´í£¡'%ctrnam)
-                #²¿·Ö±íÒª¼ÓÉÏ¸üĞÂÈÕÆÚ
+                    raise MyException('ç”¨sqlldrè£…å…¥æ•°æ®%sæ—¶å‡ºé”™ï¼'%ctrnam)
+                #éƒ¨åˆ†è¡¨è¦åŠ ä¸Šæ›´æ–°æ—¥æœŸ
                 if row[3] == '1':
                     cursLog.execute("update dataprc.%s set upddat='%s'"%(ctrnam,row[0]))
                 cursLog.callproc('proc_data.prc_inc_data',(ctrnam,))
@@ -378,9 +378,9 @@ class RunPython:
                 conn.commit()
             conn.commit()
             conn.close()
-            return True,'ĞÅÓÃ¿¨Êı¾İ×°ÈëÊı¾İ¿â³É¹¦!'
+            return True,'ä¿¡ç”¨å¡æ•°æ®è£…å…¥æ•°æ®åº“æˆåŠŸ!'
         except Exception,msg:
-            return False,'ĞÅÓÃ¿¨Êı¾İ×°ÈëÊı¾İ¿âÊ§°Ü£º'+str(msg)+ctrnam
+            return False,'ä¿¡ç”¨å¡æ•°æ®è£…å…¥æ•°æ®åº“å¤±è´¥ï¼š'+str(msg)+ctrnam
         
     def procCard2DB_v3_t(self,procDate,filnam):
         #reload(SasConfig)
@@ -400,8 +400,8 @@ class RunPython:
                 
                 if(os.system(r"sqlldr %s control=%s bindsize=10000000 rows=500 log=%s data=%s bad=%s"%\
                              (SasConfig.conn_dataprc,control_file,log_file,SasConfig.card_sqlldr_data+ctrnam+'.txt',bad_file)) != 0):
-                    raise MyException('ÓÃsqlldr×°ÈëÊı¾İ%sÊ±³ö´í£¡'%ctrnam)
-                #²¿·Ö±íÒª¼ÓÉÏ¸üĞÂÈÕÆÚ
+                    raise MyException('ç”¨sqlldrè£…å…¥æ•°æ®%sæ—¶å‡ºé”™ï¼'%ctrnam)
+                #éƒ¨åˆ†è¡¨è¦åŠ ä¸Šæ›´æ–°æ—¥æœŸ
                 if row[3] == '1':
                     cursLog.execute("update dataprc.%s set upddat='%s'"%(ctrnam,row[0]))
                 cursLog.callproc('proc_data.prc_inc_data',(ctrnam,))
@@ -410,11 +410,11 @@ class RunPython:
                 conn.commit()
             conn.commit()
             conn.close()
-            return True,'ĞÅÓÃ¿¨Êı¾İ×°ÈëÊı¾İ¿â³É¹¦!'
+            return True,'ä¿¡ç”¨å¡æ•°æ®è£…å…¥æ•°æ®åº“æˆåŠŸ!'
         except Exception,msg:
-            return False,'ĞÅÓÃ¿¨Êı¾İ×°ÈëÊı¾İ¿âÊ§°Ü£º'+str(msg)+ctrnam
+            return False,'ä¿¡ç”¨å¡æ•°æ®è£…å…¥æ•°æ®åº“å¤±è´¥ï¼š'+str(msg)+ctrnam
 
-    #¿¨ÎÄ¼ş´«¼¯ÖĞ±¸·İ·şÎñÆ÷
+    #å¡æ–‡ä»¶ä¼ é›†ä¸­å¤‡ä»½æœåŠ¡å™¨
     def procCardData2Jzbf(self,procDate):
         try:
             conn=cx_Oracle.connect(SasConfig.conn_bancs)
@@ -437,19 +437,19 @@ class RunPython:
             ftp_jzbf.quit()
             conn.commit()
             conn.close()
-            return True,'ĞÅÓÃ¿¨Êı¾İ´«¼¯ÖĞ±¸·İ³É¹¦!'
+            return True,'ä¿¡ç”¨å¡æ•°æ®ä¼ é›†ä¸­å¤‡ä»½æˆåŠŸ!'
         except Exception,msg:
-            return False,'ĞÅÓÃ¿¨Êı¾İ´«¼¯ÖĞ±¸·İÊ§°Ü£º'+str(msg)
+            return False,'ä¿¡ç”¨å¡æ•°æ®ä¼ é›†ä¸­å¤‡ä»½å¤±è´¥ï¼š'+str(msg)
 
-    #¿¨ÎÄ¼ş´«»üºË
+    #å¡æ–‡ä»¶ä¼ ç¨½æ ¸
     def procCardData2JH(self,procDate):
         try:
             conn=cx_Oracle.connect(SasConfig.conn_bancs)
             cursLog=conn.cursor()
 
             ftp_jh = ftplib.FTP()
-            ftp_jh.connect("22.96.2.91","21")
-            ftp_jh.login("iax","iaxisftp")
+            ftp_jh.connect("xx.xx.xx.xx","21")
+            ftp_jh.login("iax","11111111")
             
             cursLog.execute("select to_char(caddat,'yyyymmdd') caddat,relnam,ctlfile,incdat from dpc_card_log  where tojh='0' and prcsts='1'")
             for row in cursLog.fetchall():
@@ -463,9 +463,9 @@ class RunPython:
             ftp_jh.quit()
             conn.commit()
             conn.close()
-            return True,'ĞÅÓÃ¿¨Êı¾İ´«»üºË³É¹¦!'
+            return True,'ä¿¡ç”¨å¡æ•°æ®ä¼ ç¨½æ ¸æˆåŠŸ!'
         except Exception,msg:
-            return False,'ĞÅÓÃ¿¨Êı¾İ´«»üºËÊ§°Ü£º'+str(msg)
+            return False,'ä¿¡ç”¨å¡æ•°æ®ä¼ ç¨½æ ¸å¤±è´¥ï¼š'+str(msg)
 if __name__=='__main__':
     method=getattr(RunPython(),sys.argv[1])
     procDate=date(int(sys.argv[2][0:4]),int(sys.argv[2][4:6]),int(sys.argv[2][6:8])) 
