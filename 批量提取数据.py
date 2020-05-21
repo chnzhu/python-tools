@@ -8,7 +8,7 @@ end_date=date(2014,10,31)
 
 while end_date >= begin_date:
     strDate=string.replace(begin_date.isoformat(),'-','')
-    tar=tarfile.open('F:\\sas_backup\\201407-12\\Êý¾Ý\\sjxc%s.tar'%strDate)
+    tar=tarfile.open('F:\\sas_backup\\sjxc%s.tar'%strDate)
     tar.extract('7886310D.TXP.gz.%s1'%strDate,"f:\\temp\\txp\\")
     tar.close()
 
