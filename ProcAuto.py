@@ -1,20 +1,20 @@
-#win32³ÌĞòÀ©Õ¹Ä£¿é
+#win32ç¨‹åºæ‰©å±•æ¨¡å—
 import win32serviceutil,win32service,win32event,servicemanager,win32com.client
 import win32con,win32file,pywintypes
 import cx_Oracle
-#ÈÕÆÚÏà¹ØÄ£¿é
+#æ—¥æœŸç›¸å…³æ¨¡å—
 from datetime import date,timedelta
 import os
 import thread,time
 import ftplib,types
 import tarfile
 import gzip
-#½âÎö²ÎÊıÄ£¿é
+#è§£æå‚æ•°æ¨¡å—
 import ConfigParser,string
 import zipfile
 import tempfile
 from socket import *
-#webserviceÄ£¿é
+#webserviceæ¨¡å—
 from ZSI.client import NamedParamBinding as NPBinding
 from ZSI.client import AUTH
 import sys
@@ -24,7 +24,7 @@ from SasConfig import SasConfig
 import RunPython
 
     
-#¶¨ÒåÒì³£
+#å®šä¹‰å¼‚å¸¸
 class MyException(Exception):
     def __init__(self,msg):
         self.args=msg
@@ -59,13 +59,13 @@ class ProcETL:
             conn=cx_Oracle.connect(SasConfig.conn_bancs)
             cursLog=conn.cursor()
             cursLast=conn.cursor()
-            #ÕÒ³öÃ¿Ò»Àà³ÌĞòÎ´Ö´ĞĞµÄ×îĞ¡Öµ
+            #æ‰¾å‡ºæ¯ä¸€ç±»ç¨‹åºæœªæ‰§è¡Œçš„æœ€å°å€¼
             cursLog.execute("select job_class,min(to_char(job_date,'yyyy-mm-dd')||trim(to_char(job_id,'09999')))\
                              from DPC_PROC_LOG where run_flag='0' group by job_class")
             for row in cursLog.fetchall():
                 job_date=row[1][0:10]
                 job_id=int(row[1][10:15])
-                #¸Ã³ÌĞòµÄÉÏÒ»³ÌĞòµÄ×´Ì¬
+                #è¯¥ç¨‹åºçš„ä¸Šä¸€ç¨‹åºçš„çŠ¶æ€
                 cursLast.execute("select run_flag,checked from (select * from DPC_PROC_LOG where job_class='%s' and job_date='%s' and \
                                 job_id < %d order by job_id desc) where rownum=1"%(row[0],job_date,job_id))
       
@@ -84,8 +84,8 @@ class ProcETL:
             if __name__=='__main__':
                 print msg
             else:
-                servicemanager.LogErrorMsg('ETLProcess´íÎó,'+str(msg))
-                self.SendSms('ETLProcess´íÎó,'+str(msg))
+                servicemanager.LogErrorMsg('ETLProcessé”™è¯¯,'+str(msg))
+                self.SendSms('ETLProcessé”™è¯¯,'+str(msg))
     def ProcessJob(self,jobDate,jobID):
         try:
             conn=cx_Oracle.connect(SasConfig.conn_bancs)
@@ -99,7 +99,7 @@ class ProcETL:
             conn.commit()
 
             if row[3] == '1':
-                self.SendSms('¿ªÊ¼´¦Àí%s£¬´¦ÀíÈÕÆÚ%s'%(row[0],row[2]))
+                self.SendSms('å¼€å§‹å¤„ç†%sï¼Œå¤„ç†æ—¥æœŸ%s'%(row[0],row[2]))
             success = False
             errMsg = ""
             if row[1] == '1':
@@ -133,45 +133,45 @@ class ProcETL:
                 conn.commit()
                 conn.close()
                 return
-            #ÅĞ¶Ï½á¹û
-            if success == None:#snapshut too old´íÎó
+            #åˆ¤æ–­ç»“æœ
+            if success == None:#snapshut too oldé”™è¯¯
                 if row[4] == '1':
                     cursLog.execute("update DPC_PROC_LOG set run_flag='0',end_run=sysdate where job_date='%s'\
                                 and job_id = %d"%(jobDate,jobID))
-                    self.SendSms('Ö´ĞĞ%sÈÕµÄ%s³öÏÖsnapshot´íÎó'%(row[2],row[0]))
+                    self.SendSms('æ‰§è¡Œ%sæ—¥çš„%så‡ºç°snapshoté”™è¯¯'%(row[2],row[0]))
                 else:
                     cursLog.execute("update DPC_PROC_LOG set run_flag='3',end_run=sysdate where job_date='%s'\
                                 and job_id = %d"%(jobDate,jobID))
-                    self.SendSms('Ö´ĞĞ%sÈÕµÄ%sÊ§°Ü'%(row[2],row[0]))           
-            elif success == False:#Ê§°Ü
+                    self.SendSms('æ‰§è¡Œ%sæ—¥çš„%så¤±è´¥'%(row[2],row[0]))           
+            elif success == False:#å¤±è´¥
                 cursLog.execute("update DPC_PROC_LOG set run_flag='3',end_run=sysdate where job_date='%s'\
                             and job_id = %d"%(jobDate,jobID))
-                ##servicemanager.LogErrorMsg('Ö´ĞĞ%sÊ§°Ü£¬´íÎóĞÅÏ¢:%s'%(row[0],errMsg))
-                self.SendSms('Ö´ĞĞ%sÈÕµÄ%sÊ§°Ü'%(row[2],row[0]))
-            elif success == True:#³É¹¦
+                ##servicemanager.LogErrorMsg('æ‰§è¡Œ%så¤±è´¥ï¼Œé”™è¯¯ä¿¡æ¯:%s'%(row[0],errMsg))
+                self.SendSms('æ‰§è¡Œ%sæ—¥çš„%så¤±è´¥'%(row[2],row[0]))
+            elif success == True:#æˆåŠŸ
                 cursLog.execute("update DPC_PROC_LOG set run_flag='2',end_run=sysdate where job_date='%s'\
                             and job_id = %d"%(jobDate,jobID))
             else:
-                self.SendSms('Process³ÌĞòµÄ·µ»ØÖµÓĞ´íÎó£¡')
-            errMsg=string.replace(errMsg,"'","¡°")
+                self.SendSms('Processç¨‹åºçš„è¿”å›å€¼æœ‰é”™è¯¯ï¼')
+            errMsg=string.replace(errMsg,"'","â€œ")
             cursLog.execute("update DPC_PROC_LOG set job_comment='%s' where job_date='%s'\
                             and job_id= %d"%(errMsg,jobDate,jobID))
             if row[3] == '2':
-                self.SendSms('´¦Àí%sÍê³É£¬´¦ÀíÈÕÆÚ%s'%(row[0],row[2]))
+                self.SendSms('å¤„ç†%så®Œæˆï¼Œå¤„ç†æ—¥æœŸ%s'%(row[0],row[2]))
             conn.commit()
             conn.close()
         except Exception,msg:
             if __name__=='__main__':
                 print msg
             else:
-                servicemanager.LogErrorMsg('ProcessJob´íÎó,'+str(msg))
-                self.SendSms('ProcessJob´íÎó,'+str(msg))
+                servicemanager.LogErrorMsg('ProcessJobé”™è¯¯,'+str(msg))
+                self.SendSms('ProcessJobé”™è¯¯,'+str(msg))
 ##    def ProcessSas(self,jobName,procDate):
 ##        time.sleep(60*1)
-##        return True,'Ö´ĞĞ%s³É¹¦'%jobName
+##        return True,'æ‰§è¡Œ%sæˆåŠŸ'%jobName
     def ProcessSas(self,jobName,procDate):
         try:
-            #ĞŞ¸Äsas_dateÎÄ¼şÖĞµÄÈÕÆÚ
+            #ä¿®æ”¹sas_dateæ–‡ä»¶ä¸­çš„æ—¥æœŸ
             fp=open(SasConfig.sas_date,'w')
             fp.write(procDate.isoformat())
             fp.close()
@@ -179,41 +179,41 @@ class ProcETL:
             log_file='%s%s%s.log'%(SasConfig.sas_log,procDate.isoformat(),jobName)
             command='call "D:\SAS9\SAS9.1\sas" -nodms -sysin "%s%s.sas" -log "%s"'%(SasConfig.sas_file,jobName,log_file)
             os.system(command)
-            #¼ì²éÈÕÖ¾ÖĞÊÇ·ñÓĞ´í 
+            #æ£€æŸ¥æ—¥å¿—ä¸­æ˜¯å¦æœ‰é”™ 
             fp=open(log_file,'r')
             log_msg=fp.read()
             fp.close()
-            #ºöÂÔÎÄ¼ş WORK.ZFMMEM.UTILITY µÄÓÀ¾Ã¸±±¾ÒÑÉ¾³ıµÄ´íÎó
-            log_msg=string.replace(log_msg,'ERROR: ÔÚÒÔÏÂÒ³ÂëÉÏ³öÏÖÁĞÏÔ´íÎó','tttt')
+            #å¿½ç•¥æ–‡ä»¶ WORK.ZFMMEM.UTILITY çš„æ°¸ä¹…å‰¯æœ¬å·²åˆ é™¤çš„é”™è¯¯
+            log_msg=string.replace(log_msg,'ERROR: åœ¨ä»¥ä¸‹é¡µç ä¸Šå‡ºç°åˆ—æ˜¾é”™è¯¯','tttt')
             tns_err=""
             tns_err=tns_err+"ERROR: ORACLE connection error: ORA-12560: TNS:protocol adapter error."+chr(13)
             tns_err=tns_err+"ERROR: ORACLE connection error: ORA-12560: TNS:protocol adapter error."+chr(13)
             tns_err=tns_err+"ERROR: ORACLE connection error: ORA-12560: TNS:protocol adapter error.\n"
-            tns_err=tns_err+"ERROR: LIBNAME Óï¾ä³ö´í¡£"+chr(13)+"ERROR: LIBNAME Óï¾ä³ö´í¡£"+chr(13)
-            tns_err=tns_err+"ERROR: LIBNAME Óï¾ä³ö´í¡£"
+            tns_err=tns_err+"ERROR: LIBNAME è¯­å¥å‡ºé”™ã€‚"+chr(13)+"ERROR: LIBNAME è¯­å¥å‡ºé”™ã€‚"+chr(13)
+            tns_err=tns_err+"ERROR: LIBNAME è¯­å¥å‡ºé”™ã€‚"
             having_tns_err=log_msg.find(tns_err)
             log_msg=string.replace(log_msg,tns_err,'tttt')
             
             tns_err="ERROR: ORACLE connection error: ORA-12500: TNS:protocol adapter error." +chr(13)
             tns_err=tns_err+"ERROR: ORACLE connection error: ORA-12500: TNS:protocol adapter error."+chr(13)
             tns_err=tns_err+"ERROR: ORACLE connection error: ORA-12500: TNS:protocol adapter error.\n"
-            tns_err=tns_err+"ERROR: LIBNAME Óï¾ä³ö´í¡£"+chr(13)+"ERROR: LIBNAME Óï¾ä³ö´í¡£"+chr(13)
-            tns_err=tns_err+"ERROR: LIBNAME Óï¾ä³ö´í¡£"
+            tns_err=tns_err+"ERROR: LIBNAME è¯­å¥å‡ºé”™ã€‚"+chr(13)+"ERROR: LIBNAME è¯­å¥å‡ºé”™ã€‚"+chr(13)
+            tns_err=tns_err+"ERROR: LIBNAME è¯­å¥å‡ºé”™ã€‚"
             if having_tns_err == -1:
                 having_tns_err=log_msg.find(tns_err)
             log_msg=string.replace(log_msg,tns_err,'tttt')
             
-            log_msg=string.replace(log_msg,'ERROR: ÎÄ¼ş WORK.ZFMMEM.UTILITY µÄÓÀ¾Ã¸±±¾ÒÑÉ¾³ı','tttt')
+            log_msg=string.replace(log_msg,'ERROR: æ–‡ä»¶ WORK.ZFMMEM.UTILITY çš„æ°¸ä¹…å‰¯æœ¬å·²åˆ é™¤','tttt')
             log_msg=log_msg.lower()
             if log_msg.find('ora-01555') != -1 or log_msg.find('ora-12560') != -1 or log_msg.find('ora-12500') != -1\
                or (having_tns_err != -1 and log_msg.find('error:') != -1):
-                return None,'Ö´ĞĞSAS³ÌĞò%s´íÎó,Çë²é¿´ÈÕÖ¾ÎÄ¼ş:%s'%(jobName,log_file)
+                return None,'æ‰§è¡ŒSASç¨‹åº%sé”™è¯¯,è¯·æŸ¥çœ‹æ—¥å¿—æ–‡ä»¶:%s'%(jobName,log_file)
             elif log_msg.find('error:') != -1 or log_msg.find('ora-') != -1:
-                return False,'Ö´ĞĞSAS³ÌĞò%s´íÎó,Çë²é¿´ÈÕÖ¾ÎÄ¼ş:%s'%(jobName,log_file)
+                return False,'æ‰§è¡ŒSASç¨‹åº%sé”™è¯¯,è¯·æŸ¥çœ‹æ—¥å¿—æ–‡ä»¶:%s'%(jobName,log_file)
             else:
-                return True,'Ö´ĞĞSAS³ÌĞò%s³É¹¦'%jobName
+                return True,'æ‰§è¡ŒSASç¨‹åº%sæˆåŠŸ'%jobName
         except Exception,msg:
-            return False,'Ö´ĞĞSAS³ÌĞò%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+            return False,'æ‰§è¡ŒSASç¨‹åº%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
 
     def ProcessProcedurePlan(self,jobName,procDate):
         try:
@@ -224,11 +224,11 @@ class ProcETL:
         except Exception,msg:
             errmsg=str(msg)
             if errmsg.find('ORA-01555') != -1 or errmsg.find('ORA-12537') != -1 or errmsg.find('ORA-12560') != -1 :
-                return None,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return None,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
             else:
-                return False,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return False,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
         else:
-            return True,'Ö´ĞĞ´æ´¢¹ı³Ì%s³É¹¦'%jobName
+            return True,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹%sæˆåŠŸ'%jobName
 
     def ProcessProcedureDss(self,jobName,procDate):
         try:
@@ -239,11 +239,11 @@ class ProcETL:
         except Exception,msg:
             errmsg=str(msg)
             if errmsg.find('ORA-01555') != -1 or errmsg.find('ORA-12537') != -1 or errmsg.find('ORA-12560') != -1 :
-                return None,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return None,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
             else:
-                return False,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return False,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
         else:
-            return True,'Ö´ĞĞ´æ´¢¹ı³Ì%s³É¹¦'%jobName
+            return True,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹%sæˆåŠŸ'%jobName
     def ProcessProcedureBancs(self,jobName,procDate):
         try:
             conn=cx_Oracle.connect (SasConfig.conn_bancs)
@@ -253,11 +253,11 @@ class ProcETL:
         except Exception,msg:
             errmsg=str(msg)
             if errmsg.find('ORA-01555') != -1 or errmsg.find('ORA-12537') != -1 or errmsg.find('ORA-12560') != -1 :
-                return None,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return None,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
             else:
-                return False,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return False,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
         else:
-            return True,'Ö´ĞĞ´æ´¢¹ı³Ì%s³É¹¦'%jobName
+            return True,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹%sæˆåŠŸ'%jobName
 
     def ProcessProcedureEreport(self,jobName,procDate):
         try:
@@ -268,11 +268,11 @@ class ProcETL:
         except Exception,msg:
             errmsg=str(msg)
             if errmsg.find('ORA-01555') != -1 or errmsg.find('ORA-12537') != -1 or errmsg.find('ORA-12560') != -1 :
-                return None,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return None,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
             else:
-                return False,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return False,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
         else:
-            return True,'Ö´ĞĞ´æ´¢¹ı³Ì%s³É¹¦'%jobName
+            return True,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹%sæˆåŠŸ'%jobName
     def ProcessProcedureNewdss(self,jobName,procDate):
         try:
             conn=cx_Oracle.connect (SasConfig.conn_newdss)
@@ -282,11 +282,11 @@ class ProcETL:
         except Exception,msg:
             errmsg=str(msg)
             if errmsg.find('ORA-01555') != -1 or errmsg.find('ORA-12537') != -1 or errmsg.find('ORA-12560') != -1 :
-                return None,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return None,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
             else:
-                return False,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return False,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
         else:
-            return True,'Ö´ĞĞ´æ´¢¹ı³Ì%s³É¹¦'%jobName
+            return True,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹%sæˆåŠŸ'%jobName
     def ProcessProcedureGyjx(self,jobName,procDate):
         try:
             conn=cx_Oracle.connect (SasConfig.conn_gyjx)
@@ -296,11 +296,11 @@ class ProcETL:
         except Exception,msg:
             errmsg=str(msg)
             if errmsg.find('ORA-01555') != -1 or errmsg.find('ORA-12537') != -1 or errmsg.find('ORA-12560') != -1 :
-                return None,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return None,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
             else:
-                return False,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return False,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
         else:
-            return True,'Ö´ĞĞ´æ´¢¹ı³Ì%s³É¹¦'%jobName
+            return True,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹%sæˆåŠŸ'%jobName
     def ProcessProcedureDappdm(self,jobName,procDate):
         try:
             conn=cx_Oracle.connect (SasConfig.conn_dappdm)
@@ -310,37 +310,37 @@ class ProcETL:
         except Exception,msg:
             errmsg=str(msg)
             if errmsg.find('ORA-01555') != -1 or errmsg.find('ORA-12537') != -1 or errmsg.find('ORA-12560') != -1 :
-                return None,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return None,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
             else:
-                return False,'Ö´ĞĞ´æ´¢¹ı³Ì´íÎó%s´íÎó,´íÎóĞÅÏ¢:%s'%(jobName,str(msg))
+                return False,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹é”™è¯¯%sé”™è¯¯,é”™è¯¯ä¿¡æ¯:%s'%(jobName,str(msg))
         else:
-            return True,'Ö´ĞĞ´æ´¢¹ı³Ì%s³É¹¦'%jobName
-##    def SendSms(self,send_message):#·¢¶ÌĞÅ
-##        servicemanager.LogInfoMsg('·¢¶ÌĞÅ£º%s'%send_message)
-    def SendSms(self,send_message):#·¢¶ÌĞÅ
+            return True,'æ‰§è¡Œå­˜å‚¨è¿‡ç¨‹%sæˆåŠŸ'%jobName
+##    def SendSms(self,send_message):#å‘çŸ­ä¿¡
+##        servicemanager.LogInfoMsg('å‘çŸ­ä¿¡ï¼š%s'%send_message)
+    def SendSms(self,send_message):#å‘çŸ­ä¿¡
         try:
             thread.start_new_thread(self.SendSmsBack,(send_message,))
         except Exception,msg:
-            servicemanager.LogErrorMsg('·¢¶ÌĞÅÊ§°Ü£¬´íÎóĞÅÏ¢£º%s'%str(msg))
-    def SendSmsBack(self,send_message):#·¢¶ÌĞÅ
+            servicemanager.LogErrorMsg('å‘çŸ­ä¿¡å¤±è´¥ï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s'%str(msg))
+    def SendSmsBack(self,send_message):#å‘çŸ­ä¿¡
         try:
-            servicemanager.LogInfoMsg('·¢¶ÌĞÅ£º%s'%send_message)
+            servicemanager.LogInfoMsg('å‘çŸ­ä¿¡ï¼š%s'%send_message)
             for phone_num in SasConfig.phone_num:
                 try:
                     self.SendSms2Server(send_message,phone_num)
                 except Exception,msg:
-                    #Ê§°Üºó³¢ÊÔÖØĞÂ·¢Ò»´Î
+                    #å¤±è´¥åå°è¯•é‡æ–°å‘ä¸€æ¬¡
                     time.sleep(30)
                     self.SendSms2Server(send_message,phone_num)
         except Exception,msg:
-            servicemanager.LogErrorMsg('·¢¶ÌĞÅÊ§°Ü£¬´íÎóĞÅÏ¢£º%s'%str(msg))
+            servicemanager.LogErrorMsg('å‘çŸ­ä¿¡å¤±è´¥ï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s'%str(msg))
 
     def SendSms2Server(self,message,phoneNumber):
         
         sendMessage=message.decode('GBK').encode('UTF-8')
         fp=open(r'D:\Projects\boc\logs\sms.log','a+')
-        b=NPBinding(url='http://21.96.51.66:8080/axis/services/SendSms?wsdl',tracefile=fp)
-        b.SetAuth(AUTH.httpbasic,'sendsms','zaq1xsw2')
+        b=NPBinding(url='http://xx.xx.xx.xx:8080/axis/services/SendSms?wsdl',tracefile=fp)
+        b.SetAuth(AUTH.httpbasic,'sendsms','')
         b.sendSms(phoneNumber=phoneNumber,message=sendMessage)
         fp.close()
     def Job2Log(self,conn,whereSQL,jobDate):
@@ -352,7 +352,7 @@ class ProcETL:
     def ETLPrepare(self):
        
         try:
-            #¶¨Ê±Ö´ĞĞµÄ³ÌĞò
+            #å®šæ—¶æ‰§è¡Œçš„ç¨‹åº
             conn=cx_Oracle.connect(SasConfig.conn_bancs)
             (y,m,d,h,mi,s)= self.GetRealTime()[0:6]
             curr_time = "%02d%02d"%(h,mi)
@@ -361,9 +361,9 @@ class ProcETL:
             self.Job2Log(conn,whereSQL,jobDate)
             conn.commit()
 
-            #¼ì²éÊı¾İ
+            #æ£€æŸ¥æ•°æ®
             curs=conn.cursor ()
-            #Êı¾İ×°ÔØµÄÈÕÆÚ
+            #æ•°æ®è£…è½½çš„æ—¥æœŸ
             curs.execute ("select to_char(curdat,'yyyy-mm-dd'),prcsts from dpc_dssdate where rownum=1") 
             row=curs.fetchone()
             crndat=row[0]
@@ -372,7 +372,7 @@ class ProcETL:
 
             crndat=date(int(crndat[0:4]),int(crndat[5:7]),int(crndat[8:10]))
 
-            #Êı¾İ´¦ÀíµÄÏÖÔÚÊı¾İµÄÈÕÆÚ
+            #æ•°æ®å¤„ç†çš„ç°åœ¨æ•°æ®çš„æ—¥æœŸ
             curs.execute ("select to_char(date_value,'yyyy-mm-dd') from dpc_proc_date where date_type='DSS'") 
             row=curs.fetchone()
             crmDate=row[0]
@@ -390,14 +390,14 @@ class ProcETL:
             if __name__=='__main__':
                 print msg
             else:
-                servicemanager.LogErrorMsg('ETLPrepare´íÎó,'+str(msg))
-                self.SendSms('ETLPrepare´íÎó,'+str(msg))
+                servicemanager.LogErrorMsg('ETLPrepareé”™è¯¯,'+str(msg))
+                self.SendSms('ETLPrepareé”™è¯¯,'+str(msg))
         
 
 class ProcJobService(win32serviceutil.ServiceFramework):
     _svc_name_ = "procauto"
-    _svc_display_name_ = "Êı¾İ´¦Àí³ÌĞòµ÷¶È·şÎñ"
-    _svc_description_="Êı¾İ´¦Àí³ÌĞòµ÷¶È·şÎñ"
+    _svc_display_name_ = "æ•°æ®å¤„ç†ç¨‹åºè°ƒåº¦æœåŠ¡"
+    _svc_description_="æ•°æ®å¤„ç†ç¨‹åºè°ƒåº¦æœåŠ¡"
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
@@ -417,8 +417,8 @@ class ProcJobService(win32serviceutil.ServiceFramework):
                 servicemanager.PYS_SERVICE_STARTED,
                 (self._svc_name_, ''))
 
-        ProcETL().SendSms('ProcJob¿ªÊ¼ÔËĞĞ')
-        #Èç¹ûÏµÍ³ÈÕÆÚ²»ÊÇ2007Äê£¬½«Ê±¼äµ÷ÕûÎª2007
+        ProcETL().SendSms('ProcJobå¼€å§‹è¿è¡Œ')
+        #å¦‚æœç³»ç»Ÿæ—¥æœŸä¸æ˜¯2007å¹´ï¼Œå°†æ—¶é—´è°ƒæ•´ä¸º2007
         (y,m,d,h,mi,s)= time.localtime()[0:6]
         if y != 2007:
             setdate='%04d-%02d-%02d'%(2007,m,d)
