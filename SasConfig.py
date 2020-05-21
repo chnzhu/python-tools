@@ -2,58 +2,58 @@ from ZSI.client import NamedParamBinding as NPBinding
 from ZSI.client import AUTH
 import win32serviceutil,win32service,win32event,servicemanager,win32com.client
 class SasConfig:
-    conn_plan="plan/y9d6@query" #oracleÊı¾İ¿âµÄÁ¬½Ó²ÎÊı
-    conn_dss="dss/ssd@dbwh" #oracleÊı¾İ¿âµÄÁ¬½Ó²ÎÊı
-    conn_channel="channel/channel@dbwh" #oracleÊı¾İ¿âµÄÁ¬½Ó²ÎÊı
-    conn_crm="duns/nsdu@crm" #oracleÊı¾İ¿âµÄÁ¬½Ó²ÎÊı
-    conn_card='card/qydrac@query'#ĞÅÓÃ¿¨Êı¾İµÄÁ¬½Ó
-    conn_bancs='bancs/true56@query570'
-    conn_ereport='ereport/cvdr12@query570'
-    conn_newdss='newdss/tiwn23@query570'
-    conn_dataprc='dataprc/yetx12@query570'
-    conn_gyjx='gyjx/wsie32@query570'
+    conn_plan="plan/1111@query" #oracleæ•°æ®åº“çš„è¿æ¥å‚æ•°
+    conn_dss="dss/111@dbwh" #oracleæ•°æ®åº“çš„è¿æ¥å‚æ•°
+    conn_channel="channel/11111@dbwh" #oracleæ•°æ®åº“çš„è¿æ¥å‚æ•°
+    conn_crm="duns/1111@crm" #oracleæ•°æ®åº“çš„è¿æ¥å‚æ•°
+    conn_card='card/11111@query'#ä¿¡ç”¨å¡æ•°æ®çš„è¿æ¥
+    conn_bancs='bancs/11111@query570'
+    conn_ereport='ereport/11111@query570'
+    conn_newdss='newdss/11111@query570'
+    conn_dataprc='dataprc/11111@query570'
+    conn_gyjx='gyjx/11111@query570'
     
-    sas_date=r'D:\Projects\boc\pgm\ETLNEW\date.txt' #sasÈÕÆÚµÄÎÄ¼ş
-    sas_file="D:\\Projects\\boc\\pgm\\ETLNEW\\" #sas³ÌĞòµÄÄ¿Â¼
-    sas_log="D:\\Projects\\boc\\logs\\" #sasÈÕÖ¾µÄÄ¿Â¼
-    phone_num=('13551384548',) #ÅúÁ¿Ê§°ÜÊ±·¢ËÍ¶ÌĞÅµÄºÅÂë
+    sas_date=r'D:\Projects\boc\pgm\ETLNEW\date.txt' #sasæ—¥æœŸçš„æ–‡ä»¶
+    sas_file="D:\\Projects\\boc\\pgm\\ETLNEW\\" #sasç¨‹åºçš„ç›®å½•
+    sas_log="D:\\Projects\\boc\\logs\\" #sasæ—¥å¿—çš„ç›®å½•
+    phone_num=('1111111111',) #æ‰¹é‡å¤±è´¥æ—¶å‘é€çŸ­ä¿¡çš„å·ç 
 
-    card_ftp_ip='21.7.1.47' #ĞÅÓÃ¿¨FTP·şÎñÆ÷µØÖ·  
-    card_ftp_port='21'   #ĞÅÓÃ¿¨FTP·şÎñÆ÷¶Ë¿Ú
-    card_ftp_user='s5100000'#ĞÅÓÃ¿¨FTP·şÎñÆ÷ÓÃ»§
-    card_ftp_passwd='q1w2e3r4'#ĞÅÓÃ¿¨FTP·şÎñÆ÷ÃÜÂë
-    card_file_dir="d:\\card_data\\" #ĞÅÓÃ¿¨ÎÄ±¾·ÅÖÃÄ¿Â¼
-    card_sqlldr_data="d:\\temp\card\\"#sqlldrÊı¾İÎÄ¼şµÄÄ¿Â¼
-    jzbf_ftp_ip='21.96.4.100' #¼¯ÖĞ±¸·İFTP·şÎñÆ÷µØÖ·  
-    jzbf_ftp_port='21'   #¼¯ÖĞ±¸·İFTP·şÎñÆ÷¶Ë¿Ú
-    jzbf_ftp_user='vch'#¼¯ÖĞ±¸·İFTP·şÎñÆ÷ÓÃ»§
-    jzbf_ftp_passwd='rNJkal@4' #CRMµÄFTP·şÎñÆ÷ÃÜÂë
-    crm_ftp_ip='22.96.2.77' #CRMµÄFTP·şÎñÆ÷µØÖ·  
-    crm_ftp_port='21'   #CRMµÄFTP·şÎñÆ÷¶Ë¿Ú
-    crm_ftp_user='crmftp'#CRMµÄFTP·şÎñÆ÷ÓÃ»§
-    crm_ftp_passwd='ftp12crm'#CRMµÄFTP·şÎñÆ÷ÃÜÂë
-    oracle_ctl_dir='D:\\Projects\\boc\\oracle_ctl\\'#sqlldrµÄcontrolÎÄ¼ş·ÅµÄÄ¿Â¼
+    card_ftp_ip='' #ä¿¡ç”¨å¡FTPæœåŠ¡å™¨åœ°å€  
+    card_ftp_port='21'   #ä¿¡ç”¨å¡FTPæœåŠ¡å™¨ç«¯å£
+    card_ftp_user='s5100000'#ä¿¡ç”¨å¡FTPæœåŠ¡å™¨ç”¨æˆ·
+    card_ftp_passwd='11111111'#ä¿¡ç”¨å¡FTPæœåŠ¡å™¨å¯†ç 
+    card_file_dir="d:\\card_data\\" #ä¿¡ç”¨å¡æ–‡æœ¬æ”¾ç½®ç›®å½•
+    card_sqlldr_data="d:\\temp\card\\"#sqlldræ•°æ®æ–‡ä»¶çš„ç›®å½•
+    jzbf_ftp_ip='' #é›†ä¸­å¤‡ä»½FTPæœåŠ¡å™¨åœ°å€  
+    jzbf_ftp_port='21'   #é›†ä¸­å¤‡ä»½FTPæœåŠ¡å™¨ç«¯å£
+    jzbf_ftp_user=''#é›†ä¸­å¤‡ä»½FTPæœåŠ¡å™¨ç”¨æˆ·
+    jzbf_ftp_passwd='' #CRMçš„FTPæœåŠ¡å™¨å¯†ç 
+    crm_ftp_ip='' #CRMçš„FTPæœåŠ¡å™¨åœ°å€  
+    crm_ftp_port='21'   #CRMçš„FTPæœåŠ¡å™¨ç«¯å£
+    crm_ftp_user=''#CRMçš„FTPæœåŠ¡å™¨ç”¨æˆ·
+    crm_ftp_passwd=''#CRMçš„FTPæœåŠ¡å™¨å¯†ç 
+    oracle_ctl_dir='D:\\Projects\\boc\\oracle_ctl\\'#sqlldrçš„controlæ–‡ä»¶æ”¾çš„ç›®å½•
     
 
-    backup_tables="'XT_','BIL','ICC'"#ĞèÒª±¸·İµÄ±í
+    backup_tables="'XT_','BIL','ICC'"#éœ€è¦å¤‡ä»½çš„è¡¨
 class Sms:
-    def SendSms(self,send_message):#·¢¶ÌĞÅ
+    def SendSms(self,send_message):#å‘çŸ­ä¿¡
         try:
-            servicemanager.LogInfoMsg('·¢¶ÌĞÅ£º%s'%send_message)
+            servicemanager.LogInfoMsg('å‘çŸ­ä¿¡ï¼š%s'%send_message)
             for phone_num in SasConfig.phone_num:
                 try:
                     self.SendSms2Server(send_message,phone_num)
                 except Exception,msg:
-                    #Ê§°Üºó³¢ÊÔÖØĞÂ·¢Ò»´Î
+                    #å¤±è´¥åå°è¯•é‡æ–°å‘ä¸€æ¬¡
                     time.sleep(30)
                     self.SendSms2Server(send_message,phone_num)
         except Exception,msg:
-            servicemanager.LogErrorMsg('·¢¶ÌĞÅÊ§°Ü£¬´íÎóĞÅÏ¢£º%s'%str(msg))
+            servicemanager.LogErrorMsg('å‘çŸ­ä¿¡å¤±è´¥ï¼Œé”™è¯¯ä¿¡æ¯ï¼š%s'%str(msg))
 
     def SendSms2Server(self,message,phoneNumber):      
         sendMessage=message.decode('GBK').encode('UTF-8')
         fp=open(r'D:\Projects\boc\logs\sms.log','a+')
-        b=NPBinding(url='http://21.96.51.66:8080/axis/services/SendSms?wsdl',tracefile=fp)
-        b.SetAuth(AUTH.httpbasic,'sendsms','zaq1xsw2')
+        b=NPBinding(url='http://xxx:xxx:xxx:xxx:8080/axis/services/SendSms?wsdl',tracefile=fp)
+        b.SetAuth(AUTH.httpbasic,'sendsms','')
         b.sendSms(phoneNumber=phoneNumber,message=sendMessage)
         fp.close()
